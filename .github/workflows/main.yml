@@ -8,38 +8,25 @@ permissions:
   security-events: write
 
 jobs:
-  build_cache_library:
-    name: Build and Cache Library
-    runs-on: self-hosted
+  testAllModes:
+    name: Test in ${{ matrix.testMode }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode:
+          - All
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           lfs: true
-      - name: Cache Unity Library
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: ./Library
           key: Library-${{ matrix.projectPath }}
           restore-keys: |
             Library-
-
-  edit_mode_tests:
-    name: Edit-Mode tests for project
-    runs-on: self-hosted
-    needs: build_cache_library
-    strategy:
-      fail-fast: false
-      matrix:
-        testMode:
-          - editmode
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      - name: Run Edit-Mode Tests
-        uses: game-ci/unity-test-runner@v4
+      - uses: game-ci/unity-test-runner@v4
         id: tests
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -47,27 +34,4 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           testMode: ${{ matrix.testMode }}
-
-  play_mode_tests:
-    name: Play-Mode tests for project
-    runs-on: self-hosted
-    needs: build_cache_library
-    strategy:
-      fail-fast: false
-      matrix:
-        testMode:
-          - playmode
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      - name: Run Play-Mode Tests
-        uses: game-ci/unity-test-runner@v4
-        id: tests
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          testMode: ${{ matrix.testMode }}
+          #githubToken: ${{ secrets.GITHUB_TOKEN }}
