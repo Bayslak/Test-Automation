@@ -17,15 +17,22 @@ jobs:
         testMode:
           - All
     steps:
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
       - uses: actions/checkout@v4
         with:
           lfs: true
+
       - uses: actions/cache@v3
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}
+          key: Library-${{ matrix.projectPath }}-node20 # Adjusted cache key for Node.js 20
           restore-keys: |
-            Library-
+            Library-${{ matrix.projectPath }}-node20 # Adjusted restore key for Node.js 20
+
       - uses: game-ci/unity-test-runner@v4
         id: tests
         env:
@@ -34,4 +41,4 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           testMode: ${{ matrix.testMode }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          # githubToken: ${{ secrets.GITHUB_TOKEN }}
