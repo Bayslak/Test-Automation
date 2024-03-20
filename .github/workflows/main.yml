@@ -8,7 +8,7 @@ permissions:
   security-events: write
 
 jobs:
-  testAllModes:
+  lets_test_this:
     name: Test in ${{ matrix.testMode }}
     runs-on: self-hosted
     strategy:
